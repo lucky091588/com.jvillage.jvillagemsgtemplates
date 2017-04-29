@@ -1,6 +1,6 @@
 # Jvillage Message Template Defaults
 
-This extension modified some default settings for some message templates. 
+This extension modifies some default settings for some message templates. 
 
 It's important to note that it doesn't modify the actual configured template settings themselves -- only the defaults.  This means that the site admins may configure its templates however they want, but when they click "Revert to Default", CiviCRM will revert to the defaults defined by this extension, not to the defaults that are released with CiviCRM.
 
