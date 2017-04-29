@@ -155,11 +155,25 @@ function jvillagemsgtemplates_civicrm_navigationMenu(&$menu) {
 } // */
 
 
+/**
+ * Change message template defaults to custom or original, as requested.
+ * 
+ * @param $to String indicating how to change defaults: if "custom", change 
+ *   defaults to their custom values; if "civicrm", revert defaults to their
+ *   original values as released with CiviCRM. For any other values, throw
+ *   an exception.
+ * @throws Exception For invalid values of $to.
+ * @throws Exception For unfound message templates.
+ */
 function _jvillagemsgtemplates_modifyDefaultTemplates($to) {
+  // Validate $to.
   if ($to != 'custom' && $to != 'civicrm') {
-    throw new Excetption('Invalid value for $to in call to '. __FUNCTION__);
+    throw new Exception('Invalid value for $to in call to '. __FUNCTION__);
   }
   
+  // Define a list of workflow option-value names that relate to the type
+  // of templates we're managing, and define for each the file basenames that 
+  // contain the relevant values.
   $workflow_templates = array(
     'contribution_offline_receipt' => array(
       'html' =>  'offline_html.tpl',
@@ -170,12 +184,19 @@ function _jvillagemsgtemplates_modifyDefaultTemplates($to) {
       'txt' => 'online_txt.tpl',
     ),
   );
+  
+  // Define the path that contains files for our default values.
+  $file_path = CRM_Core_Resources::singleton()->getPath('com.jvillage.jvillagemsgtemplates') . '/msg_template/' . $to;
 
+  // Get the option values that match the keys of $workflow_templates.
   $option_values = civicrm_api3('OptionValue', 'get', array(
     'sequential' => 1,
     'name' => array('IN' => array_keys($workflow_templates)),
     'option_group_id' => "msg_tpl_workflow_contribution",
   ));
+  
+  // Loop through each option value and change the values in the default 
+  // (is_reserved) template for each one.
   foreach ($option_values['values'] as $option_value) {
     try {
       $message_template = civicrm_api3('MessageTemplate', 'getsingle', array(
@@ -185,16 +206,28 @@ function _jvillagemsgtemplates_modifyDefaultTemplates($to) {
       ));
     }
     catch (Exception $e) {       
+      // There should be exactly one; if not, that problem is beyond our means.
+      // When we're being called from an extension lifecycle hook such as
+      // enable/disable/install/uninstall (which as far as I know is the only 
+      // time this is called), this Exception will cause that lifecycle action
+      // to fail.
+      // TODO: This is not atomic; for exampe, we could change one template
+      // successfully, then fail on the second one, and be left in a state 
+      // where a) we're unable to install/uninstall the extension and b) we have
+      // some templates with custom defaults and others with civicrm defaults.
       throw new Exception("Could not find exactly one default template matching workflow '{$option_value['name']}");
     }
     
-    $ext_path = CRM_Core_Resources::singleton()->getPath('com.jvillage.jvillagemsgtemplates') . '/msg_template/' . $to;
+    // Get our desired default values.
+    $html = file_get_contents("{$file_path}/{$workflow_templates[$option_value['name']]['html']}");
+    $txt = file_get_contents("{$file_path}/{$workflow_templates[$option_value['name']]['txt']}");
     
-    $html = file_get_contents("{$ext_path}/{$workflow_templates[$option_value['name']]['html']}");
-    $txt = file_get_contents("{$ext_path}/{$workflow_templates[$option_value['name']]['txt']}");
-    
-    
-    
+    // Get all existing values for the default template, and just overwrite
+    // the ones we want to change. Then update with the 'create' API action.
+    // We could also have just set the values we want to set, but I vaguely 
+    // recall a situation in which the 'create' API action would not update if
+    // it was missing certain parameters (something more than ID), so I've opted
+    // for this more thorough approach to parameters.
     $api_params = $message_template;
     $api_params['msg_text'] = $txt;
     $api_params['msg_html'] = $html;
