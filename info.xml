@@ -20,7 +20,7 @@
   <compatibility>
     <ver>4.7</ver>
   </compatibility>
-  <comments>Please see README.md for technical details.</comments>
+  <comments>Please see README.md ("Documentation" link above) for technical details.</comments>
   <civix>
     <namespace>CRM/Jvillagemsgtemplates</namespace>
   </civix>
