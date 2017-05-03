@@ -325,6 +325,6 @@
 
  </table>
 </center>
-<p>Docref.offhtm</p>
+<p>(Format version: offhtm-1)</p>
 </body>
 </html>

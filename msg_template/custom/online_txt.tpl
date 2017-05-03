@@ -84,29 +84,6 @@
 {if $credit_card_exp_date}{ts}Expires{/ts}: {$credit_card_exp_date|truncate:7:''|crmDate}{/if}
 {/if}
 
-{* ************* START profile fields ********* *}
-{if $customGroup}
-{foreach from=$customGroup item=value key=customName}
-{assign var=showHeader value=0}
-{capture name=customGroupRows}
-{foreach from=$value item=v key=n}
-{if $v}
-{assign var=showHeader value=1}
-{$n}: {$v}
-{/if}
-{/foreach}
-{/capture}
-{if $showHeader eq 1}
-
-===========================================================
-{$customName}
-===========================================================
-{$smarty.capture.customGroupRows}
-{/if}
-{/foreach}
-{/if}
-{* ************* END profile fields ********* *}
-
 {if $softCreditTypes and $softCredits}
 {foreach from=$softCreditTypes item=softCreditType key=n}
 ===========================================================
@@ -136,4 +113,64 @@
 {/if}
 
 
-Docref.onltxt
+{* ************* START profile fields ********* *}
+{if $onBehalfProfile}
+{assign var=showHeader value=0}
+{capture name=customGroupRows}
+{foreach from=$onBehalfProfile item=customValue key=customName}
+{if $customValue}
+ {assign var=showHeader value=1}
+ {$customName}: {$customValue}
+{/if}
+{/foreach}
+{/capture}
+{if $showHeader eq 1}
+===========================================================
+{ts}On Behalf Of{/ts}
+
+===========================================================
+{$smarty.capture.customGroupRows}
+{/if}
+{/if}
+
+{if $customPre}
+{assign var=showHeader value=0}
+{capture name=customGroupRows}
+{foreach from=$customPre item=customValue key=customName}
+{if $customValue && (( $trackingFields and ! in_array( $customName, $trackingFields ) ) or ! $trackingFields)}
+ {assign var=showHeader value=1}
+ {$customName}: {$customValue}
+{/if}
+{/foreach}
+{/capture}
+{if $showHeader eq 1}
+===========================================================
+{$customPre_grouptitle}
+
+===========================================================
+{$smarty.capture.customGroupRows}
+{/if}
+{/if}
+
+{if $customPost}
+{assign var=showHeader value=0}
+{capture name=customGroupRows}
+{foreach from=$customPost item=customValue key=customName}
+{if $customValue && (( $trackingFields and ! in_array( $customName, $trackingFields ) ) or ! $trackingFields)}
+ {assign var=showHeader value=1}
+ {$customName}: {$customValue}
+{/if}
+{/foreach}
+{/capture}
+{if $showHeader eq 1}
+===========================================================
+{$customPost_grouptitle}
+
+===========================================================
+{$smarty.capture.customGroupRows}
+{/if}
+{/if}
+{* ************* END profile fields ********* *}
+
+
+(Format version: onltxt-1)

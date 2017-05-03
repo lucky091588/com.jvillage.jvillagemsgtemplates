@@ -247,37 +247,6 @@
        {/foreach}
      {/if}
      
-{* ************* START profile fields ********* *}
-    {if $customGroup}
-      {foreach from=$customGroup item=value key=customName}
-        {assign var=showHeader value=0}
-        {capture name=customGroupRows}
-          {foreach from=$value item=v key=n}
-            {if $v}
-              {assign var=showHeader value=1}
-              <tr>
-               <td {$labelStyle}>
-                {$n}
-               </td>
-               <td {$valueStyle}>
-                {$v}
-               </td>
-              </tr>
-            {/if}
-          {/foreach}
-        {/capture}
-        {if $showHeader eq 1}
-          <tr>
-           <th {$headerStyle}>
-            {$customName}
-           </th>
-          </tr>
-          {$smarty.capture.customGroupRows}
-        {/if}
-      {/foreach}
-    {/if}
-{* ************* END profile fields ********* *}
-
      {if $product_name}
       <tr>
        <th {$headerStyle}>
@@ -321,6 +290,88 @@
       {/if}
      {/if}
 
+{* ************* START profile fields ********* *}
+{if $onBehalfProfile}
+{assign var=showHeader value=0}
+{capture name=customGroupRows}
+{foreach from=$onBehalfProfile item=customValue key=customName}
+{if $customValue}
+ {assign var=showHeader value=1}
+    <tr>
+     <td {$labelStyle}>
+      {$customName}
+     </td>
+     <td {$valueStyle}>
+      {$customValue}
+     </td>
+    </tr> 
+{/if}
+{/foreach}
+{/capture}
+{if $showHeader eq 1}
+    <tr>
+     <th {$headerStyle}>
+      On Behalf Of
+     </th>
+    </tr>
+{$smarty.capture.customGroupRows}
+{/if}
+{/if}
+
+{if $customPre}
+{assign var=showHeader value=0}
+{capture name=customGroupRows}
+{foreach from=$customPre item=customValue key=customName}
+{if $customValue && (( $trackingFields and ! in_array( $customName, $trackingFields ) ) or ! $trackingFields)}
+ {assign var=showHeader value=1}
+    <tr>
+     <td {$labelStyle}>
+      {$customName}
+     </td>
+     <td {$valueStyle}>
+      {$customValue}
+     </td>
+    </tr> 
+{/if}
+{/foreach}
+{/capture}
+{if $showHeader eq 1}
+    <tr>
+     <th {$headerStyle}>
+      customPre_grouptitle: {$customPre_grouptitle}
+     </th>
+    </tr>
+{$smarty.capture.customGroupRows}
+{/if}
+{/if}
+
+{if $customPost}
+{assign var=showHeader value=0}
+{capture name=customGroupRows}
+{foreach from=$customPost item=customValue key=customName}
+{if $customValue && (( $trackingFields and ! in_array( $customName, $trackingFields ) ) or ! $trackingFields)}
+ {assign var=showHeader value=1}
+    <tr>
+     <td {$labelStyle}>
+      {$customName}
+     </td>
+     <td {$valueStyle}>
+      {$customValue}
+     </td>
+    </tr> 
+{/if}
+{/foreach}
+{/capture}
+{if $showHeader eq 1}
+    <tr>
+     <th {$headerStyle}>
+      customPost_grouptitle: {$customPost_grouptitle}
+     </th>
+    </tr>
+{$smarty.capture.customGroupRows}
+{/if}
+{/if}
+{* ************* END profile fields ********* *}
     </table>
    </td>
   </tr>
@@ -328,6 +379,6 @@
  </table>
 </center>
      
-<p>Docref.onlhtm</p>
+<p>(Format version: onlhtm-1)</p>
 </body>
 </html>
